@@ -1,25 +1,22 @@
 # Mervie AI Backend
 
-Node.js/Express API for Mervie AI - Intelligence for Maternal Health.
+Node.js/Express + MongoDB API for Mervie AI - Intelligence for Maternal Health.
 
-## Run
+## Setup
 ```bash
 npm install
 cp .env.example .env
-npm run dev
+# set MONGODB_URI, JWT_SECRET, FRONTEND_URL
+npm start
 ```
 
-## API
-- `GET /api/health`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-- `GET /api/dashboard/stats` (auth)
-- `GET /api/dashboard/patients` (auth)
-- `POST /api/contact`
-- `POST /api/ai/assess` (auth)
+## Render
+- Build: `npm install`
+- Start: `npm start`
+- Env vars: `MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL`
 
-## Deploy (Render)
-- Build command: `npm install`
-- Start command: `npm start`
-- Env: `JWT_SECRET`, `FRONTEND_URL`
+## MongoDB Atlas (free)
+1. https://cloud.mongodb.com → create free M0 cluster
+2. Database Access → create DB user/password
+3. Network Access → allow `0.0.0.0/0` (for Render)
+4. Connect → Drivers → copy connection string into `MONGODB_URI`

@@ -1,18 +1,26 @@
 import { Router } from 'express';
 import { auth } from '../middleware/auth.js';
-import { readDB } from '../utils/db.js';
+import Patient from '../models/Patient.js';
+import Alert from '../models/Alert.js';
 const r = Router();
-r.get('/stats', auth, (req,res)=>{
-  const db=readDB();
-  res.json({
-    mothers: db.patients.length + 2844,
-    appointments: 143,
-    alerts: db.alerts.length + 10,
-    assessments: 1284,
-    risk: { low:72, moderate:21, high:7 },
-    recentAlerts: db.alerts.slice(-5).reverse(),
-    patients: db.patients
-  });
+r.get('/stats', auth, async (req, res) => {
+  try {
+    const [patientCount, alerts, patients] = await Promise.all([Patient.countDocuments(), Alert.find().sort({ createdAt: -1 }).limit(5), Patient.find().sort({ createdAt: -1 }).limit(20)]);
+    res.json({
+      mothers: patientCount + 2844,
+      appointments: 143,
+      alerts: await Alert.countDocuments() + 10,
+      assessments: 1284,
+      risk: { low: 72, moderate: 21, high: 7 },
+      recentAlerts: alerts,
+      patients
+    });
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to load stats' });
+  }
 });
-r.get('/patients', auth, (req,res)=>{ res.json({patients: readDB().patients}); });
+r.get('/patients', auth, async (req, res) => {
+  try { res.json({ patients: await Patient.find().sort({ createdAt: -1 }) }); }
+  catch (e) { res.status(500).json({ message: 'Failed to load patients' }); }
+});
 export default r;
